@@ -24,9 +24,9 @@ class Examens extends BaseController
                         <td>$exam->Rijschool</td>
                         <td>$exam->Stad</td>
                         <td>$exam->Uitslag</td>                     
-                      </tr>";
+                 </tr>";
         }
-        
+
         $data = [
             'title' => 'Alle examens',
             'rows' => $rows,
