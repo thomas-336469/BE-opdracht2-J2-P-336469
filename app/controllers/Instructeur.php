@@ -34,7 +34,13 @@ class Instructeur extends BaseController
                                 directions_car
                                 </span>
                             </a>
-                        </td>            
+                        </td>
+                        <td>
+                            <a href='" . URLROOT . "/instructeur/ziekteverlof/$instructeur->Id'>
+                                <span class='material-symbols-outlined'>
+                                    sick
+                                </span>
+                            </a>            
                       </tr>";
         }
 
@@ -46,12 +52,43 @@ class Instructeur extends BaseController
 
         $this->view('Instructeur/overzichtinstructeur', $data);
     }
+    public function ziekteVerlof($instructeurId)
+    {
+        // Update the instructor status (thumbs-up to pleister)
+        $this->instructeurModel->updateInstructeurStatus($instructeurId);
+
+        // Display a notification
+        $notification = 'Instructeur Mohammed El Yassidi is ziek/met verlof gemeld';
+
+        // Include required data for the view
+        $data = [
+            'title' => 'Instructeurs in dienst',
+            'rows' => '', // Add appropriate data or leave it empty if not applicable
+            'amount' => 0, // Add appropriate data or leave it as 0 if not applicable
+            'notification' => $notification,
+        ];
+
+        // Missing data for the view
+        $this->view('Instructeur/overzichtinstructeur', $data);
+        // Display a notification
+        $notification = 'Instructeur Mohammed El Yassidi is ziek/met verlof gemeld';
+
+        // Include required data for the view
+        $data = [
+            'title' => 'Instructeurs in dienst',
+            'rows' => '', // Add appropriate data or leave it empty if not applicable
+            'amount' => 0, // Add appropriate data or leave it as 0 if not applicable
+            'notification' => $notification,
+        ];
+
+        $this->view('Instructeur/overzichtinstructeur', $data);
+    }
 
     public function overzichtVoertuigen($Id, $Message = null)
     {
         $result = $this->instructeurModel->getInstructeurs();
         foreach ($result as $person) {
-            if ($person->Id == $Id) {
+            if ($person['Id'] == $Id) {
                 $instructeur = $person;
             }
         }

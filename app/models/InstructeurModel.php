@@ -93,6 +93,37 @@ class InstructeurModel
         $this->db->bind(':CarId', $CarId);
         $this->db->bind(':PersonId', $PersonId);
 
-        $this->db->excecuteWithoutReturn();
+        $this->db->execute();
+    }
+    public function updateInstructeurStatus($instructeurId)
+    {
+        $sql = "UPDATE Instructeur SET IsActief = CASE WHEN IsActief = 1 THEN 0 ELSE 1 END WHERE Id = :instructeurId";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':instructeurId', $instructeurId, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
+
+    public function getAssignedVehicles($instructeurId)
+    {
+        $sql = "SELECT 
+        VI.*, 
+        VO.*, 
+        TV.* 
+    FROM 
+        VoertuigInstructeur AS VI
+    INNER JOIN 
+        Voertuig AS VO ON VI.VoertuigId = VO.Id
+    INNER JOIN 
+        TypeVoertuig AS TV ON VO.TypeVoertuigId = TV.Id
+    WHERE 
+        VI.InstructeurId = :instructeurId";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':instructeurId', $instructeurId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

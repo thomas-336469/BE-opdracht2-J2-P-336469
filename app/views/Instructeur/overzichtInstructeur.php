@@ -24,12 +24,17 @@
                 <th>Datum in dienst</th>
                 <th>Aantal sterren</th>
                 <th>Voertuigen</th>
+                <th>Ziekte/Verlof</th>
             </thead>
             <tbody>
                 <?= $data['rows']; ?>
             </tbody>
         </table>
     </div>
+    <!-- Display notification -->
+    <?php if (isset($notification)) : ?>
+        <div class="notification"><?= $notification ?></div>
+    <?php endif; ?>
 </body>
 
 </html>

@@ -4,6 +4,8 @@ class Database
 {
     private $dbHandler;
     private $statement;
+    private $dbh;
+    private $stmt;
 
     public function __construct()
     {
@@ -54,10 +56,19 @@ class Database
     {
         $this->statement->execute();
     }
+    public function execute()
+    {
+        return $this->statement->execute();
+    }
 
     public function resultSet()
     {
-        $this->statement->execute();
+        $this->execute();
         return $this->statement->fetchAll(PDO::FETCH_OBJ);
+    }
+    public function prepare($sql)
+    {
+        $this->statement = $this->dbHandler->prepare($sql);
+        return $this->statement;
     }
 }
