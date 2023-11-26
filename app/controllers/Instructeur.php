@@ -1,5 +1,4 @@
 <?php
-
 class Instructeur extends BaseController
 {
     private $instructeurModel;
@@ -9,11 +8,14 @@ class Instructeur extends BaseController
         $this->instructeurModel = $this->model('InstructeurModel');
     }
 
+    public function index()
+    {
+        $this->overzichtInstructeur();
+    }
+
     public function overzichtInstructeur()
     {
         $result = $this->instructeurModel->getInstructeurs();
-
-        //  var_dump($result);
 
         $rows = "";
         $amount = 0;
@@ -36,157 +38,24 @@ class Instructeur extends BaseController
                             </a>
                         </td>
                         <td>
-                            <a href='" . URLROOT . "/instructeur/ziekteverlof/$instructeur->Id'>
-                                <span class='material-symbols-outlined'>
-                                    sick
-                                </span>
-                            </a>            
+                        <a href='" . URLROOT . "/instructeur/ziekteverlof/$instructeur->Id'>
+                            <span class='material-icons'>
+                                thumb_up
+                            </span>
+                        </a>            
+                    </td>          
                       </tr>";
         }
 
         $data = [
             'title' => 'Instructeurs in dienst',
             'rows' => $rows,
-            'amount' => $amount
-        ];
-
-        $this->view('Instructeur/overzichtinstructeur', $data);
-    }
-    public function ziekteVerlof($instructeurId)
-    {
-        // Update the instructor status (thumbs-up to pleister)
-        $this->instructeurModel->updateInstructeurStatus($instructeurId);
-
-        // Display a notification
-        $notification = 'Instructeur Mohammed El Yassidi is ziek/met verlof gemeld';
-
-        // Include required data for the view
-        $data = [
-            'title' => 'Instructeurs in dienst',
-            'rows' => '', // Add appropriate data or leave it empty if not applicable
-            'amount' => 0, // Add appropriate data or leave it as 0 if not applicable
-            'notification' => $notification,
-        ];
-
-        // Missing data for the view
-        $this->view('Instructeur/overzichtinstructeur', $data);
-        // Display a notification
-        $notification = 'Instructeur Mohammed El Yassidi is ziek/met verlof gemeld';
-
-        // Include required data for the view
-        $data = [
-            'title' => 'Instructeurs in dienst',
-            'rows' => '', // Add appropriate data or leave it empty if not applicable
-            'amount' => 0, // Add appropriate data or leave it as 0 if not applicable
-            'notification' => $notification,
+            'amount' => $amount,
+            'result' => $result
         ];
 
         $this->view('Instructeur/overzichtinstructeur', $data);
     }
 
-    public function overzichtVoertuigen($Id, $Message = null)
-    {
-        $result = $this->instructeurModel->getInstructeurs();
-        foreach ($result as $person) {
-            if ($person['Id'] == $Id) {
-                $instructeur = $person;
-            }
-        }
-
-        $result = $this->instructeurModel->getToegewezenVoertuigen($Id);
-        if ($result != null) {
-            $tableRows = "";
-            foreach ($result as $voertuig) {
-                $tableRows .= "<tr>
-                                <td>$voertuig->TypeVoertuig</td>
-                                <td>$voertuig->Type</td>
-                                <td>$voertuig->Kenteken</td>
-                                <td>$voertuig->Bouwjaar</td>
-                                <td>$voertuig->Brandstof</td>
-                                <td>$voertuig->RijbewijsCategorie</td>
-                                <th>
-                                    <a href='" . URLROOT . "/Voertuig/editVoertuig/" . $voertuig->Id . "'>
-                                        <span class='material-symbols-outlined'>
-                                            edit
-                                        </span>
-                                    </a>
-                                </th>
-                                <th>
-                                    <a href='" . URLROOT . "/instructeur/deleteCar/$voertuig->Id/$instructeur->Id'>
-                                        <span class='material-symbols-outlined'>
-                                            delete
-                                        </span>
-                                    </a>
-                                </th>
-                               </tr> ";
-            };
-        } else {
-            $tableRows = "<tr><td colspan='6'>Nog geen voertuigen toegewezen</td></tr>";
-        }
-
-        $data = [
-            'title' => 'Door instructeur gebruikte voertuigen',
-            'tableRows' => $tableRows,
-            'personData' => $instructeur,
-            'message' => $Message
-        ];
-
-        $this->view('Instructeur/overzichtVoertuigen', $data);
-    }
-
-    public function beschikbarenVoertuigen($Id)
-    {
-        $result = $this->instructeurModel->getInstructeurs();
-        foreach ($result as $person) {
-            if ($person->Id == $Id) {
-                $instructeur = $person;
-            }
-        }
-
-        $result = $this->instructeurModel->getVrijeVoertuigen($Id);
-        if ($result != null) {
-            $tableRows = "";
-            foreach ($result as $voertuig) {
-                $tableRows .= "<tr>
-                                <td>$voertuig->TypeVoertuig</td>
-                                <td>$voertuig->Type</td>
-                                <td>$voertuig->Kenteken</td>
-                                <td>$voertuig->Bouwjaar</td>
-                                <td>$voertuig->Brandstof</td>
-                                <td>$voertuig->RijbewijsCategorie</td>
-                                <td>
-                                    <a href='" . URLROOT . "/instructeur/beschikbarenVoertuigen/" . $instructeur->Id . "?Update=true&CarId=$voertuig->Id'>
-                                        <span class='material-symbols-outlined'>
-                                            add_box
-                                        </span>
-                                    </a>
-                                </td>
-                               </tr> ";
-            };
-        } else {
-            $tableRows = "<tr><td colspan='7'>Geen vrije voertuigen</td></tr>";
-        }
-
-        $data = [
-            'title' => 'Alle beschikbaren voertuigen',
-            'tableRows' => $tableRows,
-            'personData' => $instructeur
-        ];
-
-        $this->view('Instructeur/beschikbarenVoertuigen', $data);
-    }
-
-    public function updateVoertuigen($CarId, $PersonId)
-    {
-        $this->instructeurModel->addCarToInstructeur($CarId, $PersonId);
-
-        header("Location: " . URLROOT . "/instructeur/overzichtVoertuigen/$PersonId/Voertuig%20toegevoegd");
-    }
-
-    public function deleteCar($CarId, $PersonId)
-    {
-        $this->instructeurModel->deleteCarFromInstructeur($CarId, $PersonId);
-
-        header("Location: " . URLROOT . "/instructeur/overzichtVoertuigen/$PersonId/Voertuig%20verwijderd");
-    }
+    // ... (other methods)
 }
